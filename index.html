@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQLite Server UI</title>
+</head>
+<body>
+  <h1>SQLite Server UI</h1>
+  
+  <form id="addItemForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+    <label for="description">Description:</label><br>
+    <textarea id="description" name="description"></textarea><br><br>
+    <button type="submit">Add Item</button>
+  </form>
+
+  <hr>
+
+  <div id="itemsList">
+    <!-- Items will be displayed here -->
+  </div>
+
+  <script>
+    async function fetchItems() {
+      const response = await fetch('/api/items');
+      const items = await response.json();
+      
+      const itemsList = document.getElementById('itemsList');
+      itemsList.innerHTML = ''; // Clear previous items
+      
+      items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.innerHTML = `<strong>${item.name}</strong>: ${item.description || 'No description'}`;
+        itemsList.appendChild(itemElement);
+      });
+    }
+
+    async function addItem(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      
+      const response = await fetch('/api/items', {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData)),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      console.log('Added item:', result);
+      form.reset(); // Clear form fields
+      fetchItems(); // Refresh items list
+    }
+
+    const addItemForm = document.getElementById('addItemForm');
+    addItemForm.addEventListener('submit', addItem);
+
+    // Initial fetch of items when page loads
+    fetchItems();
+  </script>
+</body>
+</html>
