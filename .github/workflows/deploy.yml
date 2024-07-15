@@ -29,4 +29,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist  # Replace with the directory of your built assets
           cname: your-custom-domain.com  # Optional: If you have a custom domain
-
